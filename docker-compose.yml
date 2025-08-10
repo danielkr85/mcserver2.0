@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  mcserver:
+    image: "mcserver:${MC_TAG}"
+    container_name: mcserver
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    environment:
+      MIN_MEMORY: ${MIN_MEMORY}
+      MAX_MEMORY: ${MAX_MEMORY}
+    volumes:
+      - ./world:/mcserver/world
+      - ./mods:/mcserver/mods
+      - ./conf/server.properties:/mcserver/server.properties
+      - ./conf/whitelist.json:/mcserver/whitelist.json
+      - ./conf/banned-players.json:/mcserver/banned-players.json
+      - ./conf/banned-ips.json:/mcserver/banned-ips.json
+      - ./conf/ops.json:/mcserver/ops.json
+    command: ["/mcserver/entrypoint.sh", "${MIN_MEMORY}", "${MAX_MEMORY}"]
+    ports:
+      - "25565:25565"

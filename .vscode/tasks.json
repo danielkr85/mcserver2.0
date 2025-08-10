@@ -1,0 +1,102 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "build",
+                "--build-arg",
+                "MC_V=${input:mcVersion}",
+                "--build-arg",
+                "FABRIC_LOADER_V=${input:fabricLoaderVersion}",
+                "--build-arg",
+                "FABRIC_INSTALLER_V=${input:fabricInstallerVersion}",
+                "-t",
+                "mcserver:${input:mcVersion}-fabric-${input:fabricLoaderVersion}-${input:fabricInstallerVersion}",
+                "-f",
+                "build/Dockerfile",
+                "."
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "run-server",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "up",
+                "mcserver"
+            ],
+            "options" : {
+                "env" : {
+                    "MC_TAG": "${input:imageTag}",
+                    "MIN_MEMORY": "${input:minMemory}",
+                    "MAX_MEMORY": "${input:maxMemory}"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "attach-mcserver",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "attach",
+                "mcserver"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "mcVersion",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "uv run python build/list_mc_versions.py",
+                "description": "Select Minecraft Version"
+            }
+        },
+        {
+            "id": "fabricLoaderVersion",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "uv run python build/list_fabric_loader_versions.py ${input:mcVersion}"
+            }
+        },
+        {
+            "id": "fabricInstallerVersion",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "uv run python build/list_fabric_installer_versions.py"
+            }
+        },
+        {
+            "id": "imageTag",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "docker images --format \"{{.Tag}}\" mcserver",
+                "description": "Select Docker image tag to run"
+            }
+        },
+        {
+            "id": "minMemory",
+            "type": "promptString",
+            "description": "Minimum memory (e.g. 2G)",
+            "default": "2G"
+        },
+        {
+            "id": "maxMemory",
+            "type": "promptString",
+            "description": "Maximum memory (e.g. 2G)",
+            "default": "2G"
+        }
+    ]
+}
