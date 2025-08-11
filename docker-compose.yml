@@ -9,14 +9,15 @@ services:
     environment:
       MIN_MEMORY: ${MIN_MEMORY}
       MAX_MEMORY: ${MAX_MEMORY}
+      WORLD_DIR: ${WORLD_DIR}
     volumes:
-      - ./world:/mcserver/world
+      - ./worlds:/mcserver/worlds
       - ./mods:/mcserver/mods
       - ./conf/server.properties:/mcserver/server.properties
       - ./conf/whitelist.json:/mcserver/whitelist.json
       - ./conf/banned-players.json:/mcserver/banned-players.json
       - ./conf/banned-ips.json:/mcserver/banned-ips.json
       - ./conf/ops.json:/mcserver/ops.json
-    command: ["/mcserver/entrypoint.sh", "${MIN_MEMORY}", "${MAX_MEMORY}"]
+    command: ["/mcserver/entrypoint.sh", "${MIN_MEMORY}", "${MAX_MEMORY}", "${WORLD_DIR}"]
     ports:
       - "25565:25565"

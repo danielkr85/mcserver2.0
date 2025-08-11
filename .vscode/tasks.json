@@ -31,11 +31,12 @@
                 "up",
                 "mcserver"
             ],
-            "options" : {
-                "env" : {
+            "options": {
+                "env": {
                     "MC_TAG": "${input:imageTag}",
                     "MIN_MEMORY": "${input:minMemory}",
-                    "MAX_MEMORY": "${input:maxMemory}"
+                    "MAX_MEMORY": "${input:maxMemory}",
+                    "WORLD_DIR": "${input:worldDir}"
                 }
             },
             "problemMatcher": []
@@ -97,6 +98,19 @@
             "type": "promptString",
             "description": "Maximum memory (e.g. 2G)",
             "default": "2G"
+        },
+        {
+            "id": "worldDir",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "powershell -Command \"Get-ChildItem -Directory -Path ./worlds | ForEach-Object { $_.Name }\"",
+                "description": "Select a world directory",
+                "allowCustomValues" : true,
+                "defaultOptions" : [
+                    "world"
+                ]
+            }
         }
     ]
 }
